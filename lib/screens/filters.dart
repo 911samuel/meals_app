@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals_app/providers/filters_provider.dart';
 
-enum Filter { glutenFree, lactoseFree, vegan, vegeterian }
-
-class FiltersScreeen extends StatefulWidget {
-  const FiltersScreeen({super.key, required this.currentFilters});
-
-  final Map<Filter, bool> currentFilters;
+class FiltersScreeen extends ConsumerStatefulWidget {
+  const FiltersScreeen({super.key});
 
   @override
-  State<FiltersScreeen> createState() => _FilterScreeenState();
+  ConsumerState<FiltersScreeen> createState() => _FilterScreeenState();
 }
 
-class _FilterScreeenState extends State<FiltersScreeen> {
+class _FilterScreeenState extends ConsumerState<FiltersScreeen> {
   var _glutenFreeFilterSet = false;
   var _lactoseFreeFilterSet = false;
   var _vegeterianFilterSet = false;
@@ -19,11 +17,12 @@ class _FilterScreeenState extends State<FiltersScreeen> {
 
   @override
   void initState() {
+    final activeFilters = ref.read(filtersProvider);
     super.initState();
-    _glutenFreeFilterSet = widget.currentFilters[Filter.glutenFree]!;
-    _lactoseFreeFilterSet = widget.currentFilters[Filter.lactoseFree]!;
-    _veganFilterSet = widget.currentFilters[Filter.vegan]!;
-    _vegeterianFilterSet = widget.currentFilters[Filter.vegeterian]!;
+    _glutenFreeFilterSet = activeFilters[Filter.glutenFree]!;
+    _lactoseFreeFilterSet = activeFilters[Filter.lactoseFree]!;
+    _veganFilterSet = activeFilters[Filter.vegan]!;
+    _vegeterianFilterSet = activeFilters[Filter.vegeterian]!;
   }
 
   @override
@@ -34,7 +33,7 @@ class _FilterScreeenState extends State<FiltersScreeen> {
         canPop: false,
         onPopInvokedWithResult: (bool didPop, dynamic result) async {
           if (didPop) return;
-          Navigator.of(context).pop({
+          ref.read(filtersProvider.notifier).setFilters({
             Filter.glutenFree: _glutenFreeFilterSet,
             Filter.lactoseFree: _lactoseFreeFilterSet,
             Filter.vegan: _veganFilterSet,
